@@ -1,0 +1,20 @@
+{
+  "name": "vendaka",
+  "version": "1.0.0",
+  "description": "Learning app for kids",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "learning",
+    "kids",
+    "education"
+  ],
+  "author": "Anbuselvan Annamalai",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
