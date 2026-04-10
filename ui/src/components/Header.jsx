@@ -48,13 +48,13 @@ export default function Header() {
         >
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-default rounded-base bg-neutral-secondary-soft md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-primary">
             <li>
-              <a
-                href="#"
+              <Link
+                href="/"
                 className="block py-2 px-3 text-white bg-brand rounded-sm md:bg-transparent md:text-fg-brand md:p-0"
                 aria-current="page"
               >
                 Home
-              </a>
+              </Link>
             </li>
             <li>
               <a
