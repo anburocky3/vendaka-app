@@ -1,0 +1,23 @@
+{
+  "name": "vendaka",
+  "version": "1.0.0",
+  "description": "- frontend lies on `/ui`\r - backend lies on `/server`",
+  "main": "index.js",
+  "scripts": {
+    "ui": "cd ui && npm run dev",
+    "server": "cd server && npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anburocky3/vendaka-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/anburocky3/vendaka-app/issues"
+  },
+  "homepage": "https://github.com/anburocky3/vendaka-app#readme"
+}
