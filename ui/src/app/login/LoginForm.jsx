@@ -1,5 +1,7 @@
 "use client";
 
+import Input from "@/components/ui/forms/Input";
+import Label from "@/components/ui/forms/Label";
 import { useState } from "react";
 
 export default function LoginForm() {
@@ -37,32 +39,20 @@ export default function LoginForm() {
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email
-        </label>
-        <input
-          type="email"
+        <Label htmlFor="email">Email</Label>
+        <Input
           id="email"
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Password
-        </label>
-        <input
-          type="password"
+        <Label htmlFor="password">Password</Label>
+        <Input
           id="password"
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          type="password"
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

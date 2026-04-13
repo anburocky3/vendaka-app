@@ -2,7 +2,7 @@ import RegisterForm from "./registerForm";
 
 export default function RegisterPage() {
   return (
-    <div className="">
+    <div className="flex items-center justify-center h-screen bg-blue-50">
       {/* Create register page which should have email and a password field */}
 
       <RegisterForm />

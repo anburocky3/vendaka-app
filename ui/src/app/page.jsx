@@ -5,7 +5,7 @@ export default function Home() {
   useEffect(() => {}, []);
 
   return (
-    <div className="">
+    <div className=" p-20 bg-blue-100 text-center ">
       <div>
         <h1 className="text-3xl font-bold mb-4">Welcome to Vendaka! Mr.</h1>
         <p className="text-lg text-gray-700">
