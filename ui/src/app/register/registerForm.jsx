@@ -1,53 +1,53 @@
 "use client";
 
+import FormError from "@/components/ui/forms/FormError";
 import Input from "@/components/ui/forms/Input";
 import Label from "@/components/ui/forms/Label";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const schema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  email: z.email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export default function RegisterForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  function submitLogin(e) {
-    e.preventDefault();
-
-    // Do validation in future, for now just send the data to the server
-    if (!name || !email || !password) {
-      alert("Please fill all the fields");
-      return;
-    }
-
-    // it should not accept numbers and special characters, only letters and spaces
-    if (name.length < 3 || !/^[a-zA-Z\s]+$/.test(name)) {
-      alert(
-        "Name should be at least 3 characters long and contain only letters and spaces",
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      alert("Password should be at least 6 characters long");
-      return;
-    }
-
+  async function submitLogin(formData) {
     // send it to my /server/register end point using fetch
-    fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message);
-        // Here you can handle the response from the server, such as showing a success message or redirecting the user.
-      })
-      .catch((err) => {
-        console.error("Error registering user:", err);
-        // Here you can handle any errors that occur during the registration process.
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
+
+      const data = await response.json();
+      alert(data.message || data.error);
+
+      if (response.ok) {
+        reset();
+      }
+    } catch (err) {
+      console.error("Error registering user:", err);
+    }
   }
 
   return (
@@ -55,7 +55,7 @@ export default function RegisterForm() {
       <h2 className="text-2xl font-bold mb-6 text-center">
         Register for an Account
       </h2>
-      <form className="space-y-6" onSubmit={submitLogin}>
+      <form className="space-y-6" onSubmit={handleSubmit(submitLogin)}>
         <div>
           <Label htmlFor="name" required>
             Name
@@ -63,9 +63,9 @@ export default function RegisterForm() {
           <Input
             id="name"
             placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...register("name")}
           />
+          <FormError message={errors.name?.message} />
         </div>
         <div>
           <Label htmlFor="email" required>
@@ -75,9 +75,9 @@ export default function RegisterForm() {
             id="email"
             type="email"
             placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email")}
           />
+          <FormError message={errors.email?.message} />
         </div>
         <div>
           <Label htmlFor="password" required>
@@ -87,14 +87,18 @@ export default function RegisterForm() {
             id="password"
             type="password"
             placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("password")}
           />
+          <FormError message={errors.password?.message} />
         </div>
         <div>
           <button
             type="submit"
-            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className={
+              `w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500` +
+              (isValid ? "" : " opacity-50 cursor-not-allowed")
+            }
+            disabled={!isValid}
           >
             Register
           </button>

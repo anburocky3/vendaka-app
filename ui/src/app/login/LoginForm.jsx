@@ -1,34 +1,51 @@
 "use client";
 
+import FormError from "@/components/ui/forms/FormError";
 import Input from "@/components/ui/forms/Input";
 import Label from "@/components/ui/forms/Label";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const schema = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: data.email, password: data.password }),
       });
-      const data = await response.json();
+
+      const loginData = await response.json();
+
       if (response.ok) {
         // Middleware runs on the server/edge, so it reads auth from cookies.
-        document.cookie = `token=${encodeURIComponent(data.token)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        document.cookie = `token=${encodeURIComponent(loginData.token)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`;
 
         window.location.href = "/dashboard";
 
-        alert(data.message);
+        alert(loginData.message);
       } else {
-        alert(data.error);
+        alert(loginData.error);
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -37,16 +54,16 @@ export default function LoginForm() {
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div>
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           type="email"
           placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          {...register("email")}
         />
+        <FormError message={errors.email?.message} />
       </div>
       <div>
         <Label htmlFor="password">Password</Label>
@@ -54,14 +71,18 @@ export default function LoginForm() {
           id="password"
           type="password"
           placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...register("password")}
         />
+        <FormError message={errors.password?.message} />
       </div>
       <div>
         <button
           type="submit"
-          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className={
+            `w-full py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors duration-300` +
+            (isValid ? "" : " opacity-50 cursor-not-allowed")
+          }
+          disabled={!isValid}
         >
           Login
         </button>

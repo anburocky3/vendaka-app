@@ -4,7 +4,7 @@ export default function Input({
   placeholder,
   value,
   onChange,
-  required = true,
+  required = false,
   ...rest
 }) {
   return (
