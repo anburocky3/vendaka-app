@@ -6,6 +6,8 @@ import Label from "@/components/ui/forms/Label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const schema = z.object({
   email: z.email("Invalid email address"),
@@ -13,6 +15,7 @@ const schema = z.object({
 });
 
 export default function LoginForm() {
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -32,18 +35,14 @@ export default function LoginForm() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Important for sending cookies
         body: JSON.stringify({ email: data.email, password: data.password }),
       });
 
       const loginData = await response.json();
 
       if (response.ok) {
-        // Middleware runs on the server/edge, so it reads auth from cookies.
-        document.cookie = `token=${encodeURIComponent(loginData.token)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-
-        window.location.href = "/dashboard";
-
-        alert(loginData.message);
+        await login();
       } else {
         alert(loginData.error);
       }

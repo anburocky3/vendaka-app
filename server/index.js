@@ -8,6 +8,7 @@ import { authMiddleware } from "./middleware/auth.js";
 import { z } from "zod";
 import validateBody from "./middleware/zod-validate.js";
 import { loginSchema, registerSchema } from "./schemas/authSchema.js";
+import { ObjectId } from "mongodb";
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -62,6 +63,13 @@ app.post("/login", validateBody(loginSchema), async (req, res) => {
       },
     );
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000, // 1 hour
+      sameSite: "Lax",
+      path: "/",
+    });
+
     res.json({ message: `User ${user.name} logged in successfully`, token });
   } catch (error) {
     console.error("Error logging in user:", error);
@@ -69,6 +77,39 @@ app.post("/login", validateBody(loginSchema), async (req, res) => {
       .status(500)
       .json({ error: "Failed to login user", errorMessage: error.message });
   }
+});
+
+app.get("/me", authMiddleware, async (req, res) => {
+  const loggedInUser = req.user;
+
+  console.log("Logged in user from /me endpoint:", loggedInUser);
+
+  try {
+    const user = await db
+      .collection("users")
+      .findOne(
+        { _id: new ObjectId(loggedInUser.id) },
+        { projection: { password: 0 } },
+      );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "Lax",
+    path: "/",
+  });
+  res.json({ message: "Logged out successfully" });
 });
 
 // protected route example

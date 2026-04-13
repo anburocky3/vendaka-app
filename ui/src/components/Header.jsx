@@ -1,6 +1,11 @@
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
 export default function Header() {
+  const { user, isAuthenticated, logout } = useAuth();
+
   return (
     <nav className="bg-zinc-900 fixed w-full z-20 top-0 inset-s-0 border-b text-white">
       <div className="max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -10,12 +15,41 @@ export default function Header() {
           </span>
         </a>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <Link
-            href={"/login"}
-            className="text-white bg-indigo-500 hover:bg-indigo-600 rounded-full box-border border border-transparent focus:ring-4 focus:ring-indigo-300 shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
-          >
-            Get started
-          </Link>
+          {!isAuthenticated ? (
+            <Link
+              href={"/login"}
+              className="text-white bg-indigo-500 hover:bg-indigo-600 rounded-full box-border border border-transparent focus:ring-4 focus:ring-indigo-300 shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
+            >
+              Get started
+            </Link>
+          ) : (
+            <div className="flex items-center space-x-3">
+              <span className="text-white">Welcome, {user.name}</span>
+              <img
+                className="w-10 h-10 rounded-full"
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff&size=128`}
+                alt="Rounded avatar"
+              />
+              <button
+                onClick={() => logout()}
+                className="px-2 py-1 rounded"
+                title="Logout"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5 text-white"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4z"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
           <button
             data-collapse-toggle="navbar-sticky"
             type="button"
@@ -47,39 +81,62 @@ export default function Header() {
           id="navbar-sticky"
         >
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-default rounded-base bg-neutral-secondary-soft md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-primary">
-            <li>
-              <Link
-                href="/"
-                className="block py-2 px-3 text-white bg-brand rounded-sm md:bg-transparent md:text-fg-brand md:p-0"
-                aria-current="page"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
-              >
-                About
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
-              >
-                Services
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
-              >
-                Contact
-              </a>
-            </li>
+            {isAuthenticated ? (
+              <>
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="block py-2 px-3 text-white bg-brand rounded-sm md:bg-transparent md:text-fg-brand md:p-0"
+                  >
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="block py-2 px-3 text-white bg-brand rounded-sm md:bg-transparent md:text-fg-brand md:p-0"
+                  >
+                    Alphabets
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link
+                    href="/"
+                    className="block py-2 px-3 text-white bg-brand rounded-sm md:bg-transparent md:text-fg-brand md:p-0"
+                    aria-current="page"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
+                  >
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
+                  >
+                    Services
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
+                  >
+                    Contact
+                  </a>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
