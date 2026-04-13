@@ -6,6 +6,7 @@
   "scripts": {
     "ui": "cd ui && npm run dev",
     "server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run ui\" \"npm run server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,9 +16,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/anburocky3/vendaka-app/issues"
   },
-  "homepage": "https://github.com/anburocky3/vendaka-app#readme"
+  "homepage": "https://github.com/anburocky3/vendaka-app#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }
