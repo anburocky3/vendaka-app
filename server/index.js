@@ -5,6 +5,7 @@ import db from "./db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "./middleware/auth.js";
+import { z } from "zod";
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -43,6 +44,28 @@ app.post("/register", async (req, res) => {
 // create a end point for login user
 app.post("/login", async (req, res) => {
   const { email, password } = req.body; // { email, password }
+
+  // zod schema
+  const loginSchema = z.object({
+    email: z.email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
+
+  const parsed = loginSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    const fields = parsed.error.issues.reduce((acc, issue) => {
+      const field = issue.path.join(".") || "form";
+      if (!acc[field]) acc[field] = [];
+      acc[field].push(issue.message);
+      return acc;
+    }, {});
+
+    return res.status(400).json({
+      error: "Validation failed",
+      fields, // { email: ["Invalid email address"], password: ["..."] }
+    });
+  }
 
   // do some basic validation
   if (!email || !password) {
