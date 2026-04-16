@@ -1,127 +1,17 @@
 import express from "express";
 // import cors from "cors";
 import "./utils/loadEnvironment.js";
-import db from "./db/connection.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { authMiddleware } from "./middleware/auth.js";
-import { z } from "zod";
-import validateBody from "./middleware/zod-validate.js";
-import { loginSchema, registerSchema } from "./schemas/authSchema.js";
-import { ObjectId } from "mongodb";
+import apiRouter from "./routers/index.js";
 
 const PORT = process.env.PORT || 5000;
 const app = express();
 // app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello from the server!" });
-});
+/// Routers
+app.use("/", apiRouter);
 
-// create a end point for register user
-app.post("/register", validateBody(registerSchema), async (req, res) => {
-  const { name, email, password } = req.validatedBody; // { name, email, password }
-
-  try {
-    await db
-      .collection("users")
-      .insertOne({ name, email, password: bcrypt.hashSync(password, 10) });
-
-    res.json({
-      message: `User ${name} registered successfully with email ${email}`,
-    });
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ error: "Failed to register user" });
-  }
-});
-
-// create a end point for login user
-app.post("/login", validateBody(loginSchema), async (req, res) => {
-  const { email, password } = req.validatedBody; // { email, password }
-
-  try {
-    const user = await db.collection("users").findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid password" });
-    }
-
-    // i have that user info!
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1h",
-      },
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 60 * 60 * 1000, // 1 hour
-      sameSite: "Lax",
-      path: "/",
-    });
-
-    res.json({ message: `User ${user.name} logged in successfully`, token });
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to login user", errorMessage: error.message });
-  }
-});
-
-app.get("/me", authMiddleware, async (req, res) => {
-  const loggedInUser = req.user;
-
-  console.log("Logged in user from /me endpoint:", loggedInUser);
-
-  try {
-    const user = await db
-      .collection("users")
-      .findOne(
-        { _id: new ObjectId(loggedInUser.id) },
-        { projection: { password: 0 } },
-      );
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json({ user });
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Failed to fetch user" });
-  }
-});
-
-app.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    sameSite: "Lax",
-    path: "/",
-  });
-  res.json({ message: "Logged out successfully" });
-});
-
-// protected route example
-app.get("/services", authMiddleware, (req, res) => {
-  const loggedInUser = req.user;
-
-  res.json({
-    services: ["Service 1", "Service 2", "Service 3"],
-    user: loggedInUser,
-  });
-});
-
+// Listening to the server
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
 });
