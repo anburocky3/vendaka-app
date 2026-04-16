@@ -1,22 +1,25 @@
-import express from "express";
-import validateBody from "#middleware/zod-validate";
-import { loginSchema, registerSchema } from "#schemas/authSchema";
-import { authMiddleware } from "#middleware/auth";
-import db from "#db/connection";
+import User from "#models/user.model";
 import bcrypt from "bcrypt";
-import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 
-const router = express.Router();
-
-// create a end point for register user
-router.post("/register", validateBody(registerSchema), async (req, res) => {
+export async function registerUser(req, res) {
   const { name, email, password } = req.validatedBody; // { name, email, password }
 
   try {
-    await db
-      .collection("users")
-      .insertOne({ name, email, password: bcrypt.hashSync(password, 10) });
+    // await db.collection("users").inse4rtOne({
+    //   name,
+    //   email,
+    //   password: bcrypt.hashSync(password, 10),
+    // });
+
+    const user = new User({
+      name,
+      email,
+      password: bcrypt.hashSync(password, 10),
+    });
+
+    await user.save();
 
     res.json({
       message: `User ${name} registered successfully with email ${email}`,
@@ -25,13 +28,14 @@ router.post("/register", validateBody(registerSchema), async (req, res) => {
     console.error("Error registering user:", error);
     res.status(500).json({ error: "Failed to register user" });
   }
-});
+}
 
-router.post("/login", validateBody(loginSchema), async (req, res) => {
+export async function loginUser(req, res) {
   const { email, password } = req.validatedBody; // { email, password }
 
   try {
-    const user = await db.collection("users").findOne({ email });
+    // const user = await db.collection("users").findOne({ email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -66,20 +70,18 @@ router.post("/login", validateBody(loginSchema), async (req, res) => {
       .status(500)
       .json({ error: "Failed to login user", errorMessage: error.message });
   }
-});
+}
 
-router.get("/me", authMiddleware, async (req, res) => {
+export async function getCurrentUser(req, res) {
   const loggedInUser = req.user;
 
   console.log("Logged in user from /me endpoint:", loggedInUser);
 
   try {
-    const user = await db
-      .collection("users")
-      .findOne(
-        { _id: new ObjectId(loggedInUser.id) },
-        { projection: { password: 0 } },
-      );
+    const user = await User.findOne(
+      { _id: new ObjectId(loggedInUser.id) },
+      { projection: { password: 0 } },
+    );
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -90,15 +92,13 @@ router.get("/me", authMiddleware, async (req, res) => {
     console.error("Error fetching user:", error);
     res.status(500).json({ error: "Failed to fetch user" });
   }
-});
+}
 
-router.post("/logout", (req, res) => {
+export const logoutUser = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     sameSite: "Lax",
     path: "/",
   });
   res.json({ message: "Logged out successfully" });
-});
-
-export default router;
+};

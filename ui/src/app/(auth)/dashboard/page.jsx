@@ -1,4 +1,4 @@
-import ServicesList from "./ServicesList";
+import ProductList from "./ProductList";
 
 export default function Dashboard() {
   return (
@@ -7,7 +7,7 @@ export default function Dashboard() {
         Welcome to the Dashboard
       </h1>
       <div>
-        <ServicesList />
+        <ProductList />
       </div>
     </div>
   );

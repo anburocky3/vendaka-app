@@ -1,7 +1,8 @@
 import express from "express";
 // import cors from "cors";
 import "#utils/loadEnvironment";
-import apiRouter from "#routers/index";
+import apiRouter from "#routers/index.route";
+import "#db/connection";
 
 const PORT = process.env.PORT || 5000;
 const app = express();

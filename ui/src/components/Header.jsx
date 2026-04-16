@@ -96,7 +96,7 @@ export default function Header() {
                     href="/dashboard"
                     className="block py-2 px-3 text-white bg-brand rounded-sm md:bg-transparent md:text-fg-brand md:p-0"
                   >
-                    Alphabets
+                    Products
                   </Link>
                 </li>
               </>
