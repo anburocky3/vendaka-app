@@ -1,7 +1,7 @@
 import express from "express";
 // import cors from "cors";
-import "./utils/loadEnvironment.js";
-import apiRouter from "./routers/index.js";
+import "#utils/loadEnvironment";
+import apiRouter from "#routers/index";
 
 const PORT = process.env.PORT || 5000;
 const app = express();

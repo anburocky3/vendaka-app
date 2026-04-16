@@ -12,6 +12,13 @@
     "kids",
     "education"
   ],
+  "imports": {
+    "#routers/*": "./routers/*.js",
+    "#middleware/*": "./middleware/*.js",
+    "#schemas/*": "./schemas/*.js",
+    "#db/*": "./db/*.js",
+    "#utils/*": "./utils/*.js"
+  },
   "author": "Anbuselvan Annamalai",
   "license": "MIT",
   "type": "module",

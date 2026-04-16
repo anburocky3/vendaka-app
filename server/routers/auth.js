@@ -1,8 +1,8 @@
 import express from "express";
-import validateBody from "../middleware/zod-validate.js";
-import { loginSchema, registerSchema } from "../schemas/authSchema.js";
-import { authMiddleware } from "../middleware/auth.js";
-import db from "../db/connection.js";
+import validateBody from "#middleware/zod-validate";
+import { loginSchema, registerSchema } from "#schemas/authSchema";
+import { authMiddleware } from "#middleware/auth";
+import db from "#db/connection";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
