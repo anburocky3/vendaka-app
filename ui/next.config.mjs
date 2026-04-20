@@ -13,12 +13,14 @@ const nextConfig = {
     root: __dirname,
   },
   async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:5000/:path*", // Your Node.js backend
-      },
-    ];
+    return {
+      afterFiles: [
+        {
+          source: "/api/:path*",
+          destination: "http://localhost:5000/:path*", // Your Node.js backend
+        },
+      ],
+    };
   },
 };
 
