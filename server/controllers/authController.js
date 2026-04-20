@@ -49,7 +49,7 @@ export async function loginUser(req, res) {
 
     // i have that user info!
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       {
         expiresIn: "1h",
@@ -74,6 +74,12 @@ export async function loginUser(req, res) {
 
 export async function getCurrentUser(req, res) {
   const loggedInUser = req.user;
+
+  if (loggedInUser.role === "admin") {
+    console.log("Admin user logged in:", loggedInUser);
+  } else {
+    console.log("Regular user logged in:", loggedInUser);
+  }
 
   console.log("Logged in user from /me endpoint:", loggedInUser);
 

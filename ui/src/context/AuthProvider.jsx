@@ -70,7 +70,12 @@ export default function AuthProvider({ children }) {
   const login = async () => {
     const me = await refreshSession();
     if (me) {
-      router.push("/dashboard");
+      // redirect to user dashboard or admin dashboard based on role
+      if (me.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
     }
   };
 

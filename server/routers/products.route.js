@@ -4,7 +4,7 @@ import { getProducts } from "#controllers/productController";
 
 const router = express.Router();
 
-// products
+// products // http://localhost:3000/api/products
 router.get("/products", authMiddleware, getProducts);
 
 export default router;
