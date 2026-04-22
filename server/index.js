@@ -3,6 +3,7 @@ import express from "express";
 import "#utils/loadEnvironment";
 import apiRouter from "#routers/index.route";
 import "#db/connection";
+import fs from "fs";
 import path from "path";
 import rateLimit from "express-rate-limit";
 
@@ -11,6 +12,11 @@ const app = express();
 // app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(import.meta.dirname, "uploads")));
+
+const uploadsDir = path.join(import.meta.dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
 
 // rate limiter
 const limiter = rateLimit({
