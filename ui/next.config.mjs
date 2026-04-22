@@ -2,6 +2,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const proxyUrl = process.env.PROXY_URL || "http://localhost:5000";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
@@ -20,7 +22,7 @@ const nextConfig = {
       afterFiles: [
         {
           source: "/api/:path*",
-          destination: "http://localhost:5000/:path*", // Your Node.js backend
+          destination: `${proxyUrl}/:path*`, // Proxy to Backend
         },
       ],
     };

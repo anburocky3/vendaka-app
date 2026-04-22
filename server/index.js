@@ -21,6 +21,8 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable `X-Rate-Limit-*` headers
 });
 
+limiter.resetKey("::ffff:");
+
 // Apply the rate limiter to all requests
 app.use(limiter);
 
