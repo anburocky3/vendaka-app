@@ -75,13 +75,13 @@ export async function loginUser(req, res) {
 export async function getCurrentUser(req, res) {
   const loggedInUser = req.user;
 
-  if (loggedInUser.role === "admin") {
-    console.log("Admin user logged in:", loggedInUser);
-  } else {
-    console.log("Regular user logged in:", loggedInUser);
-  }
+  // if (loggedInUser.role === "admin") {
+  //   console.log("Admin user logged in:", loggedInUser);
+  // } else {
+  //   console.log("Regular user logged in:", loggedInUser);
+  // }
 
-  console.log("Logged in user from /me endpoint:", loggedInUser);
+  // console.log("Logged in user from /me endpoint:", loggedInUser);
 
   try {
     const user = await User.findOne(
